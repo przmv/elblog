@@ -9,12 +9,12 @@
 To install, use `go get`:
 
 ```bash
-$ go get -d github.com/Petr Shevtsov/elb-log-analyzer
+$ go get -d github.com/pshevtsov/elb-log-analyzer
 ```
 
 ## Contribution
 
-1. Fork ([https://github.com/Petr Shevtsov/elb-log-analyzer/fork](https://github.com/Petr Shevtsov/elb-log-analyzer/fork))
+1. Fork ([https://github.com/pshevtsov/elb-log-analyzer/fork](https://github.com/pshevtsov/elb-log-analyzer/fork))
 1. Create a feature branch
 1. Commit your changes
 1. Rebase your local changes against the master branch
@@ -24,4 +24,4 @@ $ go get -d github.com/Petr Shevtsov/elb-log-analyzer
 
 ## Author
 
-[Petr Shevtsov](https://github.com/Petr Shevtsov)
+[Petr Shevtsov](https://github.com/pshevtsov)
