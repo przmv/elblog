@@ -9,7 +9,7 @@
 To install, use `go get`:
 
 ```bash
-$ go get -d github.com/pshevtsov/elb-log-analyzer
+$ go get github.com/pshevtsov/elb-log-analyzer
 ```
 
 ## Contribution
