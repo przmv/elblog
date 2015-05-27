@@ -14,7 +14,7 @@ var Flags = []cli.Flag{
 var flagInterval = cli.DurationFlag{
 	Name:  "interval",
 	Value: 0,
-	Usage: "analyze data in this interval",
+	Usage: "analyze data in this previous interval",
 }
 
 var flagHourly = cli.BoolFlag{
