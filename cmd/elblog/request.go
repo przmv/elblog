@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/codegangsta/cli"
 	"github.com/pshevtsov/elblog"
-	"github.com/satyrius/gonx"
 )
 
 var commandRequest = cli.Command{
@@ -19,29 +20,23 @@ var requestFlags = []cli.Flag{
 	requestFlagParam,
 }
 
-var requestFlagParam = cli.StringSliceFlag{
+var requestFlagParam = cli.StringFlag{
 	Name:  "param",
 	Usage: "Specify HTTP request parameter",
-	Value: &cli.StringSlice{},
 }
 
 func doRequest(c *cli.Context) {
-	params := c.StringSlice("param")
+	param := c.String("param")
 	// Show help if param flag is empty
-	if len(params) == 0 {
+	if param == "" {
 		cli.ShowCommandHelp(c, c.Command.Name)
 		return
 	}
-	reader, err := elblog.NewReader(c.Args())
+	reducer := elblog.NewRequestParamCount(param)
+	reader := NewReader(c, reducer)
+	entry, err := reader.Read()
 	assert(err)
-	parser := elblog.NewParser()
-	for _, param := range params {
-		reducer := elblog.NewRequestParamCount(param)
-		count, ok := <-gonx.MapReduce(
-			reader,
-			parser,
-			reducer,
-		)
-		debug(count, ok)
+	for k, v := range entry.Fields() {
+		fmt.Println(k, v)
 	}
 }
