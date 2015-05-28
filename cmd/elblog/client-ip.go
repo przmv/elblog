@@ -18,7 +18,7 @@ var commandClientIP = cli.Command{
 }
 
 func doClientIP(c *cli.Context) {
-	reducer := gonx.NewGroupBy([]string{elblog.FieldClientIP}, new(gonx.Count))
+	reducer := elblog.NewGroupByClientIP(new(gonx.Count))
 	reader := NewReader(c, reducer)
 	for {
 		entry, err := reader.Read()
@@ -26,7 +26,7 @@ func doClientIP(c *cli.Context) {
 			break
 		}
 		assert(err)
-		k, err := entry.Field(elblog.FieldClientIP)
+		k, err := entry.Field("client_ip")
 		assert(err)
 		v, err := entry.Field("count")
 		assert(err)
