@@ -2,20 +2,35 @@ package elblog
 
 import (
 	"io"
-	"os"
+
+	"github.com/pshevtsov/gonx"
 )
 
-func NewReader(args []string) (io.Reader, error) {
-	var files []io.Reader
-	for _, arg := range args {
-		file, err := os.Open(arg)
-		if err != nil {
-			return nil, err
-		}
-		files = append(files, file)
+type Reader struct {
+	file    io.Reader
+	parser  *gonx.Parser
+	reducer gonx.Reducer
+	entries chan *gonx.Entry
+}
+
+func NewReader(file io.Reader, reducer gonx.Reducer) *Reader {
+	return &Reader{
+		file:    file,
+		parser:  NewParser(),
+		reducer: reducer,
 	}
-	if len(files) > 0 {
-		return io.MultiReader(files...), nil
+}
+
+func (r *Reader) Read() (entry *gonx.Entry, err error) {
+	if r.reducer == nil {
+		r.reducer = new(gonx.ReadAll)
 	}
-	return os.Stdin, nil
+	if r.entries == nil {
+		r.entries = gonx.MapReduce(r.file, r.parser, r.reducer)
+	}
+	entry, ok := <-r.entries
+	if !ok {
+		err = io.EOF
+	}
+	return
 }
