@@ -13,7 +13,6 @@ func main() {
 	app.Email = "petr.shevtsov@gmail.com"
 	app.Flags = Flags
 	app.Commands = Commands
-	app.Before = Before
 
 	app.RunAndExitOnError()
 }
