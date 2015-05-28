@@ -13,17 +13,9 @@ var Commands = []cli.Command{
 	commandInterval,
 	commandRequestParam,
 	commandClientIP,
+	commandStatus,
 
-	commandError,
 	commandLatency,
-}
-
-var commandError = cli.Command{
-	Name:  "error",
-	Usage: "",
-	Description: `
-`,
-	Action: doError,
 }
 
 var commandLatency = cli.Command{
