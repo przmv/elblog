@@ -11,7 +11,7 @@ import (
 
 var Commands = []cli.Command{
 	commandInterval,
-	commandRequest,
+	commandRequestParam,
 
 	commandIp,
 	commandError,
