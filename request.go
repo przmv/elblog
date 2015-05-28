@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/satyrius/gonx"
+	"github.com/pshevtsov/gonx"
 )
 
 type RequestParamCount struct {
@@ -20,7 +20,7 @@ func (r *RequestParamCount) Reduce(input chan *gonx.Entry, output chan *gonx.Ent
 	for entry := range input {
 		req, err := entry.Field(FieldRequest)
 		if err != nil {
-			panic(err)
+			continue
 		}
 		param := r.getParamValue(req)
 		if param != "" {
@@ -38,9 +38,6 @@ func (r *RequestParamCount) Reduce(input chan *gonx.Entry, output chan *gonx.Ent
 // Get query parameter from the request field
 func (r RequestParamCount) getParamValue(s string) string {
 	parts := strings.Split(s, " ")
-	u, err := url.Parse(parts[1])
-	if err != nil {
-		return ""
-	}
+	u, _ := url.Parse(parts[1])
 	return u.Query().Get(r.param)
 }
