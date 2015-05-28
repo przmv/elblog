@@ -9,8 +9,7 @@ import (
 var (
 	FieldTimestamp              = "timestamp"
 	FieldELB                    = "elb"
-	FieldClientIP               = "client_ip"
-	FieldClientPort             = "client_port"
+	FieldClient                 = "client"
 	FieldBackend                = "backend"
 	FieldRequestProcessingTime  = "request_processing_time"
 	FieldBackendProcessingTime  = "backend_processing_time"
@@ -29,8 +28,6 @@ func (f field) String() string {
 	switch s {
 	case FieldRequest:
 		return fmt.Sprintf(`"$%s"`, s)
-	case FieldClientIP:
-		return fmt.Sprint("$", s, ":$", FieldClientPort)
 	}
 	return fmt.Sprint("$", s)
 }
@@ -39,7 +36,7 @@ func NewParser() *gonx.Parser {
 	slice := []field{
 		field(FieldTimestamp),
 		field(FieldELB),
-		field(FieldClientIP),
+		field(FieldClient),
 		field(FieldBackend),
 		field(FieldRequestProcessingTime),
 		field(FieldBackendProcessingTime),
