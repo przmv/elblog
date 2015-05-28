@@ -50,6 +50,10 @@ func NewGroupByClientIP(reducers ...gonx.Reducer) *GroupByClientIP {
 	return &GroupByClientIP{reducers: reducers}
 }
 
+var (
+	FieldClientIP = "client_ip"
+)
+
 // Apply related reducers and group data by client IP.
 func (r *GroupByClientIP) Reduce(input chan *gonx.Entry, output chan *gonx.Entry) {
 	subInput := make(map[string]chan *gonx.Entry)
@@ -59,7 +63,7 @@ func (r *GroupByClientIP) Reduce(input chan *gonx.Entry, output chan *gonx.Entry
 	// for each entry key we group by
 	for entry := range input {
 		clientIPEntry := r.clientIPEntry(entry)
-		key := clientIPEntry.FieldsHash([]string{"client_ip"})
+		key := clientIPEntry.FieldsHash([]string{FieldClientIP})
 		if _, ok := subInput[key]; !ok {
 			subInput[key] = make(chan *gonx.Entry, cap(input))
 			subOutput[key] = make(chan *gonx.Entry, cap(output)+1)
@@ -86,6 +90,6 @@ func (r *GroupByClientIP) clientIPEntry(entry *gonx.Entry) *gonx.Entry {
 	}
 	clientIP := strings.Split(client, ":")[0]
 	return gonx.NewEntry(gonx.Fields{
-		"client_ip": clientIP,
+		FieldClientIP: clientIP,
 	})
 }

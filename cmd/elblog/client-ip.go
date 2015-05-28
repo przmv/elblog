@@ -26,7 +26,7 @@ func doClientIP(c *cli.Context) {
 			break
 		}
 		assert(err)
-		k, err := entry.Field("client_ip")
+		k, err := entry.Field(elblog.FieldClientIP)
 		assert(err)
 		v, err := entry.Field("count")
 		assert(err)
