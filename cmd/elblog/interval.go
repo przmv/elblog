@@ -15,6 +15,20 @@ var (
 	ErrMutuallyExclusiveFlags = errors.New("mutually exclusive flags")
 )
 
+const (
+	IntervalHour = -1 * time.Hour
+	IntervalDay  = -24 * time.Hour
+)
+
+func NewInterval(d time.Duration, t time.Time) *gonx.Interval {
+	return &gonx.Interval{
+		Field:  elblog.FieldTimestamp,
+		Format: time.RFC3339Nano,
+		Start:  t.Add(d),
+		End:    t,
+	}
+}
+
 var commandInterval = cli.Command{
 	Name:  "interval",
 	Usage: "Filter log entries by the specified interval",
@@ -66,7 +80,7 @@ func doInterval(c *cli.Context) {
 	assert(err)
 	var reducer gonx.Reducer
 	if duration != 0 {
-		reducer = elblog.NewInterval(duration, time.Now())
+		reducer = NewInterval(duration, time.Now())
 	} else {
 		reducer = nil
 	}
@@ -90,10 +104,10 @@ func getDuration(c *cli.Context) (duration time.Duration, err error) {
 		return
 	}
 	if c.Bool("hour") {
-		return elblog.IntervalHourly, nil
+		return IntervalHour, nil
 	}
 	if c.Bool("day") {
-		return elblog.IntervalDaily, nil
+		return IntervalDay, nil
 	}
 	return c.Duration("duration") * -1, nil
 }
