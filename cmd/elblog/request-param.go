@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/codegangsta/cli"
 	"github.com/pshevtsov/elblog"
+	"github.com/pshevtsov/elblog/output"
 )
 
 var commandRequestParam = cli.Command{
@@ -15,7 +14,25 @@ var commandRequestParam = cli.Command{
    request path field across the log entries provided.
 
    The required '--param' flag is used to specify the HTTP request parameter.
-`,
+
+   If global flag '--csv' was set, the first column of the output denotes the request
+   parameter value and the second one is the count.
+
+TEMPLATE DATA:
+   If using global flag '--template', the following data type is sent to the template
+   to execute:
+
+   []map[string]string
+
+   The possible map keys are 'RequestParameterValue' and 'Count'.
+
+   The example template is the following:
+
+   {{range $i, $r := .}}
+       {{$i}}. {{$r.RequestParameterValue}} ({{$r.Count}})
+   {{end}}
+
+   See https://golang.org/pkg/text/template/ for the reference.`,
 	Flags:  requestParamFlags,
 	Action: doRequestParam,
 }
@@ -26,7 +43,7 @@ var requestParamFlags = []cli.Flag{
 
 var requestParamFlagParam = cli.StringFlag{
 	Name:  "param",
-	Usage: "Specify HTTP request parameter",
+	Usage: "HTTP request parameter",
 }
 
 func doRequestParam(c *cli.Context) {
@@ -40,7 +57,11 @@ func doRequestParam(c *cli.Context) {
 	reader := NewReader(c, reducer)
 	entry, err := reader.Read()
 	assert(err)
+	o := &output.Output{}
+	o.SetNames("request parameter value", "count")
 	for k, v := range entry.Fields() {
-		fmt.Println(k, v)
+		o.Add(k, v)
 	}
+	err = Output(c, o)
+	assert(err)
 }

@@ -5,11 +5,16 @@ import (
 )
 
 var Flags = []cli.Flag{
-	flagOutput,
+	flagCSV,
+	flagTemplate,
 }
 
-var flagOutput = cli.StringFlag{
-	Name:  "output",
-	Value: "csv",
-	Usage: "specify the output format: csv or text",
+var flagCSV = cli.BoolFlag{
+	Name:  "csv",
+	Usage: "output in CSV format",
+}
+
+var flagTemplate = cli.StringFlag{
+	Name:  "template",
+	Usage: "output the result of template execute",
 }
