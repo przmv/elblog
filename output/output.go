@@ -12,7 +12,8 @@ import (
 )
 
 type Output struct {
-	Writer io.Writer
+	Writer   io.Writer
+	IsSingle bool
 
 	rows     [][]string
 	lengths  map[int]int
@@ -77,11 +78,22 @@ func (o *Output) Template(s string) error {
 	if o.Writer == nil {
 		o.Writer = os.Stdout
 	}
+	s = o.sanitizeTemplate(s)
 	t := template.Must(template.New("output").Parse(s))
 	if o.hasNames {
 		return o.namedDataTemplate(t)
 	}
+	if o.IsSingle {
+		return t.Execute(o.Writer, o.rows[0])
+	}
 	return t.Execute(o.Writer, o.rows)
+}
+
+func (o *Output) sanitizeTemplate(s string) string {
+	if !strings.HasSuffix(strings.TrimSpace(s), "\n") {
+		s = s + "\n"
+	}
+	return s
 }
 
 func (o *Output) namedDataTemplate(t *template.Template) error {
@@ -98,6 +110,9 @@ func (o *Output) namedDataTemplate(t *template.Template) error {
 			m[names[i]] = col
 		}
 		data = append(data, m)
+	}
+	if o.IsSingle {
+		return t.Execute(o.Writer, data[0])
 	}
 	return t.Execute(o.Writer, data)
 }
