@@ -25,9 +25,6 @@ func (o *Output) Add(row ...string) {
 }
 
 func (o *Output) SetNames(names ...string) {
-	for i, name := range names {
-		names[i] = strings.ToUpper(name)
-	}
 	o.updateLengths(names)
 	if o.hasNames {
 		o.rows[0] = names
@@ -53,9 +50,12 @@ func (o *Output) Table(spaces int) {
 	if o.Writer == nil {
 		o.Writer = os.Stdout
 	}
-	for _, row := range o.rows {
-		for i, col := range row {
-			n := strconv.Itoa(o.lengths[i] + spaces)
+	for i, row := range o.rows {
+		for j, col := range row {
+			n := strconv.Itoa(o.lengths[j] + spaces)
+			if o.hasNames && i == 0 {
+				col = strings.ToUpper(col)
+			}
 			fmt.Fprintf(o.Writer, "%-"+n+"s", col)
 		}
 		fmt.Fprintln(o.Writer, "")
