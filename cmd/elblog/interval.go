@@ -50,6 +50,8 @@ var commandInterval = cli.Command{
    fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units
    are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 
+   If no arguments were provided, the command reads standard input.
+
 NOTE:
    Global flags '--csv' and '--template' are ignored by the 'interval' command.`,
 	Flags:  intervalFlags,

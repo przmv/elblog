@@ -28,6 +28,8 @@ var commandLatency = cli.Command{
    time values. Latency standard deviation is stored in the fifth column. The last three
    columns show the percentile latency stats in the following order: p50, p75 and p99.
 
+   If no arguments were provided, the command reads standard input.
+
 TEMPLATE DATA:
    If using global flag '--template', the following data type is sent to the template
    to execute:

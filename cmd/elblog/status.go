@@ -23,6 +23,8 @@ var commandStatus = cli.Command{
    If global flag '--csv' was set, the first column of the output denotes status code
    and the second one is the count.
 
+   If no arguments were provided, the command reads standard input.
+
 TEMPLATE DATA:
    If using global flag '--template', the following data type is sent to the template
    to execute:
