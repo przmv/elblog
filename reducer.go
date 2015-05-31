@@ -1,7 +1,10 @@
 package elblog
 
 import (
+	"math"
 	"net/url"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/pshevtsov/gonx"
@@ -92,4 +95,89 @@ func (r *GroupByClientIP) clientIPEntry(entry *gonx.Entry) *gonx.Entry {
 	return gonx.NewEntry(gonx.Fields{
 		FieldClientIP: clientIP,
 	})
+}
+
+var (
+	FieldCount             = "count"
+	FieldMinimum           = "min"
+	FieldMaximum           = "max"
+	FieldMean              = "mean"
+	FieldStandardDeviation = "standard deviation"
+)
+
+func FieldPercentile(p float64) string {
+	return "p" + strconv.Itoa(int(p*100))
+}
+
+type Latency struct {
+	Percentiles []float64
+}
+
+func (r *Latency) Reduce(input chan *gonx.Entry, output chan *gonx.Entry) {
+	var (
+		min      float64 = math.MaxFloat64
+		max      float64
+		count    float64
+		total    float64
+		mean     float64
+		vSum     float64
+		variance float64
+		values   []float64
+	)
+	for entry := range input {
+		sum := entry.SumFields([]string{
+			FieldRequestProcessingTime,
+			FieldBackendProcessingTime,
+			FieldResponseProcessingTime,
+		})
+		sum = sum * 1000 // ms
+		values = append(values, sum)
+
+		min = math.Min(min, sum)
+		max = math.Max(max, sum)
+
+		total += sum
+		count++
+
+		mean = total / count
+
+		d := sum - mean
+		vSum += d * d
+		variance = vSum / count
+	}
+	entry := gonx.NewEmptyEntry()
+	entry.SetUintField("count", uint64(count))
+	entry.SetFloatField(FieldMinimum, min)
+	entry.SetFloatField(FieldMaximum, max)
+	entry.SetFloatField(FieldMean, mean)
+	entry.SetFloatField(FieldStandardDeviation, math.Sqrt(variance))
+	percentiles := r.calcPercentiles(values)
+	for i, p := range r.Percentiles {
+		k := FieldPercentile(p)
+		v := percentiles[i]
+		entry.SetFloatField(k, v)
+	}
+	output <- entry
+	close(output)
+}
+
+func (r *Latency) calcPercentiles(values []float64) []float64 {
+	scores := make([]float64, len(r.Percentiles))
+	size := len(values)
+	if size > 0 {
+		sort.Float64s(values)
+		for i, p := range r.Percentiles {
+			pos := p * float64(size+1)
+			if pos < 1.0 {
+				scores[i] = values[0]
+			} else if pos >= float64(size) {
+				scores[i] = values[size-1]
+			} else {
+				lower := values[int(pos)-1]
+				upper := values[int(pos)]
+				scores[i] = lower + (pos-math.Floor(pos))*(upper-lower)
+			}
+		}
+	}
+	return scores
 }
