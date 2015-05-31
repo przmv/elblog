@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
-	//"github.com/pshevtsov/gonx"
 )
 
 var Commands = []cli.Command{
@@ -14,16 +13,7 @@ var Commands = []cli.Command{
 	commandRequestParam,
 	commandClientIP,
 	commandStatus,
-
 	commandLatency,
-}
-
-var commandLatency = cli.Command{
-	Name:  "latency",
-	Usage: "",
-	Description: `
-`,
-	Action: doLatency,
 }
 
 func debug(v ...interface{}) {
@@ -37,10 +27,4 @@ func assert(err error) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-}
-
-func doError(c *cli.Context) {
-}
-
-func doLatency(c *cli.Context) {
 }
