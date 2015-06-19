@@ -4,6 +4,8 @@
 
 Tool for analyzing access logs for Amazon Elastic Load Balancing.
 
+Initially developed for processing [ipinfo.io](https://ipinfo.io/) access logs.
+
 ## Usage
 
 ### Filter log entries by the specified interval
